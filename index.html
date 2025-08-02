@@ -296,24 +296,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Equipment Type</label>
-                        <select id="equipmentType">
-                            <option value="">Select Equipment</option>
-                            <option value="Badminton Racket">🏸 Badminton Racket</option>
-                            <option value="Table Tennis Racket">🏓 Table Tennis Racket</option>
-                            <option value="Football">⚽ Football</option>
-                            <option value="Basketball">🏀 Basketball</option>
-                            <option value="Volleyball">🏐 Volleyball</option>
-                            <option value="Cricket Bat">🏏 Cricket Bat</option>
-                            <option value="Tennis Ball">🎾 Tennis Ball</option>
-                            <option value="Track Spikes">🏃 Track Spikes</option>
-                            <option value="Other">🏆 Other</option>
+                        <label>Facility Type</label>
+                        <select id="facilityType">
+                            <option value="">Select Facility</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Gym">Gym</option>
+                            <option value="Music Room">Music Room</option>
+                            <option value="Pantry">Pantry</option>
                         </select>
-                    </div>
-
-                    <div class="form-group" id="otherEquipment" style="display: none;">
-                        <label>Specify Equipment</label>
-                        <input type="text" id="customEquipment" placeholder="Enter equipment name">
                     </div>
 
                     <button class="btn" onclick="issueEquipment()">Issue Equipment</button>
@@ -378,7 +368,103 @@
         let transactions = [];
         let activeLoans = [];
 
-        // Automatically load the Excel file on page load
+        // Utility Functions
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
+
+        function formatDateTime(date) {
+            return date.toLocaleString('en-IN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function calculateDuration(startTime, endTime) {
+            const diff = endTime - startTime;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (hours === 0) {
+                return `${minutes}m`;
+            }
+            return `${hours}h ${minutes}m`;
+        }
+
+        // Table Update Functions
+        function updateActiveLoansTable() {
+            const tbody = document.getElementById('activeLoansBody');
+            if (activeLoans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No active loans</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = activeLoans.map(loan => {
+                const duration = calculateDuration(loan.outTime, new Date());
+                return `
+                    <tr>
+                        <td>${loan.rollNo}</td>
+                        <td>${loan.name}</td>
+                        <td>${loan.roomNo}</td>
+                        <td>${loan.equipment}</td>
+                        <td>${formatDateTime(loan.outTime)}</td>
+                        <td>${duration}</td>
+                        <td><button class="return-btn" onclick="returnEquipment(${loan.id})">Return</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateTransactionTable() {
+            const tbody = document.getElementById('transactionBody');
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">No transactions yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = transactions.map(transaction => {
+                const duration = transaction.inTime ?
+                    calculateDuration(transaction.outTime, transaction.inTime) :
+                    calculateDuration(transaction.outTime, new Date());
+
+                return `
+                    <tr>
+                        <td>${formatDate(transaction.outTime)}</td>
+                        <td>${transaction.rollNo}</td>
+                        <td>${transaction.name}</td>
+                        <td>${transaction.equipment}</td>
+                        <td>${formatTime(transaction.outTime)}</td>
+                        <td>${transaction.inTime ? formatTime(transaction.inTime) : '-'}</td>
+                        <td>${duration}</td>
+                        <td><span class="status-${transaction.status}">${transaction.status.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Core Application Functions
         async function loadStudentDatabase() {
             try {
                 const response = await fetch('check.xlsx');
@@ -476,26 +562,16 @@
 
         function issueEquipment() {
             const rollNo = document.getElementById('rollNo').value.trim();
-            const equipmentType = document.getElementById('equipmentType').value;
-            const customEquipment = document.getElementById('customEquipment').value.trim();
+            const equipment = document.getElementById('facilityType').value;
 
             if (!studentsData[rollNo]) {
                 showStatus('issueStatus', 'Please look up student first', 'error');
                 return;
             }
 
-            if (!equipmentType) {
+            if (!equipment) {
                 showStatus('issueStatus', 'Please select an equipment type', 'error');
                 return;
-            }
-
-            let equipment = equipmentType;
-            if (equipmentType === 'Other') {
-                if (!customEquipment) {
-                    showStatus('issueStatus', 'Please specify the equipment name', 'error');
-                    return;
-                }
-                equipment = customEquipment;
             }
 
             // Check if student already has an active loan
@@ -529,8 +605,7 @@
 
             // Reset form
             document.getElementById('rollNo').value = '';
-            document.getElementById('equipmentType').value = '';
-            document.getElementById('customEquipment').value = '';
+            document.getElementById('facilityType').value = '';
             document.getElementById('studentInfo').style.display = 'none';
         }
 
@@ -554,122 +629,15 @@
             }
         }
 
-        function updateActiveLoansTable() {
-            const tbody = document.getElementById('activeLoansBody');
-
-            if (activeLoans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No active loans</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = activeLoans.map(loan => {
-                const duration = calculateDuration(loan.outTime, new Date());
-                return `
-                    <tr>
-                        <td>${loan.rollNo}</td>
-                        <td>${loan.name}</td>
-                        <td>${loan.roomNo}</td>
-                        <td>${loan.equipment}</td>
-                        <td>${formatDateTime(loan.outTime)}</td>
-                        <td>${duration}</td>
-                        <td><button class="return-btn" onclick="returnEquipment(${loan.id})">Return</button></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function updateTransactionTable() {
-            const tbody = document.getElementById('transactionBody');
-
-            if (transactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">No transactions yet</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = transactions.map(transaction => {
-                const duration = transaction.inTime ?
-                    calculateDuration(transaction.outTime, transaction.inTime) :
-                    calculateDuration(transaction.outTime, new Date());
-
-                return `
-                    <tr>
-                        <td>${formatDate(transaction.outTime)}</td>
-                        <td>${transaction.rollNo}</td>
-                        <td>${transaction.name}</td>
-                        <td>${transaction.equipment}</td>
-                        <td>${formatTime(transaction.outTime)}</td>
-                        <td>${transaction.inTime ? formatTime(transaction.inTime) : '-'}</td>
-                        <td>${duration}</td>
-                        <td><span class="status-${transaction.status}">${transaction.status.toUpperCase()}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function formatDateTime(date) {
-            return date.toLocaleString('en-IN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function formatDate(date) {
-            return date.toLocaleDateString('en-IN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        }
-
-        function formatTime(date) {
-            return date.toLocaleTimeString('en-IN', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function calculateDuration(startTime, endTime) {
-            const diff = endTime - startTime;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-            if (hours === 0) {
-                return `${minutes}m`;
-            }
-            return `${hours}h ${minutes}m`;
-        }
-
-        function showStatus(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-            setTimeout(() => {
-                element.innerHTML = '';
-            }, 5000);
-        }
-
-        // Handle equipment type change
-        document.getElementById('equipmentType').addEventListener('change', function() {
-            const otherEquipment = document.getElementById('otherEquipment');
-            if (this.value === 'Other') {
-                otherEquipment.style.display = 'block';
-            } else {
-                otherEquipment.style.display = 'none';
-            }
-        });
-
-        // Auto-refresh active loans duration every minute
-        setInterval(() => {
-            if (activeLoans.length > 0) {
-                updateActiveLoansTable();
-            }
-        }, 60000);
-
-        // Load student database automatically when page loads
+        // Initial Setup
         window.addEventListener('load', () => {
             loadStudentDatabase();
+            // Auto-refresh active loans duration every minute
+            setInterval(() => {
+                if (activeLoans.length > 0) {
+                    updateActiveLoansTable();
+                }
+            }, 60000);
         });
     </script>
 </body>
