@@ -1,693 +1,699 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Equipment Portal</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Equipment Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 100%;
-        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+        }
 
-        .header {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
 
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
 
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
 
-        .main-content {
-            padding: 40px;
-        }
+        .main-content {
+            padding: 40px;
+        }
 
-        .section {
-            margin-bottom: 40px;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            color: white;
-        }
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            color: white;
+        }
 
-        .equipment-issue {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
+        .equipment-issue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
 
-        .active-loans {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        }
+        .active-loans {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
 
-        .transaction-log {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        }
+        .transaction-log {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
 
-        .section h2 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 1.1em;
-        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            font-size: 1em;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            backdrop-filter: blur(10px);
-            transition: border-color 0.3s ease;
-        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+            transition: border-color 0.3s ease;
+        }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: rgba(255, 255, 255, 0.7);
-        }
+        /* Fix for dropdown text visibility */
+        .form-group select option {
+            color: black;
+            background: white;
+        }
 
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
 
-        .btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
 
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
 
-        .student-info {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            backdrop-filter: blur(10px);
-        }
-        
-        .student-info h3 {
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
+        .student-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .student-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
 
-        .info-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 15px;
-            border-radius: 6px;
-        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
 
-        .info-label {
-            font-weight: 600;
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
 
-        .info-value {
-            font-size: 1.1em;
-            margin-top: 5px;
-        }
-        
-        .table-container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow-x: auto;
-            backdrop-filter: blur(10px);
-        }
+        .info-label {
+            font-weight: 600;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        .info-value {
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+        
+        .table-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow-x: auto;
+            backdrop-filter: blur(10px);
+        }
 
-        th,
-        td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-        th {
-            background: rgba(255, 255, 255, 0.1);
-            font-weight: 600;
-            font-size: 0.95em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        #activeLoansTable th {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        #transactionTable th {
-            background: rgba(255, 255, 255, 0.2);
-        }
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-        .status-active {
-            background: #e74c3c;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: 600;
-        }
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        #activeLoansTable th {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        #transactionTable th {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
-        .status-returned {
-            background: #27ae60;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: 600;
-        }
+        .status-active {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
 
-        .return-btn {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-        }
+        .status-returned {
+            background: #27ae60;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
 
-        .return-btn:hover {
-            background: #219a52;
-            transform: scale(1.05);
-        }
+        .return-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
 
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-weight: 600;
-        }
+        .return-btn:hover {
+            background: #219a52;
+            transform: scale(1.05);
+        }
 
-        .alert-success {
-            background: rgba(39, 174, 96, 0.2);
-            border: 2px solid rgba(39, 174, 96, 0.5);
-            color: #27ae60;
-        }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
 
-        .alert-error {
-            background: rgba(231, 76, 60, 0.2);
-            border: 2px solid rgba(231, 76, 60, 0.5);
-            color: #e74c3c;
-        }
+        .alert-success {
+            background: rgba(39, 174, 96, 0.2);
+            border: 2px solid rgba(39, 174, 96, 0.5);
+            color: #27ae60;
+        }
 
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 20px;
-            }
+        .alert-error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid rgba(231, 76, 60, 0.5);
+            color: #e74c3c;
+        }
 
-            .header {
-                padding: 20px;
-            }
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
 
-            .header h1 {
-                font-size: 2em;
-            }
+            .header {
+                padding: 20px;
+            }
 
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fa-solid fa-trophy"></i> Sports Equipment Portal</h1>
-            <p>Hostel Sports Equipment Management System</p>
-        </div>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fa-solid fa-trophy"></i> Sports Equipment Portal</h1>
+            <p>Hostel Sports Equipment Management System</p>
+        </div>
 
-        <div class="main-content">
-            <div class="section equipment-issue">
-                <h2><i class="fa-solid fa-arrow-up-from-bracket"></i> Issue Equipment</h2>
-                <div class="form-group">
-                    <label>Roll Number</label>
-                    <input type="text" id="rollNo" placeholder="Enter student's roll number">
-                </div>
-                <button class="btn" onclick="lookupStudent()">Find Student</button>
+        <div class="main-content">
+            <div class="section equipment-issue">
+                <h2><i class="fa-solid fa-arrow-up-from-bracket"></i> Issue Equipment</h2>
+                <div class="form-group">
+                    <label>Roll Number</label>
+                    <input type="text" id="rollNo" placeholder="Enter student's roll number">
+                </div>
+                <button class="btn" onclick="lookupStudent()">Find Student</button>
 
-                <div id="issueStatus"></div>
+                <div id="issueStatus"></div>
 
-                <div id="studentInfo" style="display: none;">
-                    <div class="student-info">
-                        <h3>Student Information</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <div class="info-label">Name</div>
-                                <div class="info-value" id="studentName">-</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">Roll Number</div>
-                                <div class="info-value" id="studentRoll">-</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">Room Number</div>
-                                <div class="info-value" id="studentRoom">-</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">Phone Number</div>
-                                <div class="info-value" id="studentPhone">-</div>
-                            </div>
-                        </div>
-                    </div>
+                <div id="studentInfo" style="display: none;">
+                    <div class="student-info">
+                        <h3>Student Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Name</div>
+                                <div class="info-value" id="studentName">-</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Roll Number</div>
+                                <div class="info-value" id="studentRoll">-</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Room Number</div>
+                                <div class="info-value" id="studentRoom">-</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value" id="studentPhone">-</div>
+                            </div>
+                        </div>
+                    </div>
 
-                    <div class="form-group">
-                        <label>Facility Type</label>
-                        <select id="facilityType">
-                            <option value="">Select Facility</option>
-                            <option value="Sports">Sports</option>
-                            <option value="Gym">Gym</option>
-                            <option value="Music Room">Music Room</option>
-                            <option value="Pantry">Pantry</option>
-                        </select>
-                    </div>
+                    <div class="form-group">
+                        <label>Facility Type</label>
+                        <select id="facilityType">
+                            <option value="">Select Facility</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Gym">Gym</option>
+                            <option value="Music Room">Music Room</option>
+                            <option value="Pantry">Pantry</option>
+                        </select>
+                    </div>
 
-                    <div class="form-group" id="sportsEquipmentGroup" style="display: none;">
-                        <label>Sports Equipment</label>
-                        <select id="sportsEquipment">
-                            <option value="">Select Equipment</option>
-                            <option value="Basketball">Basketball</option>
-                            <option value="Football">Football</option>
-                            <option value="Volleyball">Volleyball</option>
-                            <option value="Cricket Kit">Cricket Kit</option>
-                            <option value="Badminton Rackets">Badminton Rackets (Pair)</option>
-                            <option value="Table Tennis">Table Tennis Rackets (Pair)</option>
-                        </select>
-                    </div>
+                    <div class="form-group" id="sportsEquipmentGroup" style="display: none;">
+                        <label>Sports Equipment</label>
+                        <select id="sportsEquipment">
+                            <option value="">Select Equipment</option>
+                            <option value="Basketball">Basketball</option>
+                            <option value="Football">Football</option>
+                            <option value="Volleyball">Volleyball</option>
+                            <option value="Cricket Kit">Cricket Kit</option>
+                            <option value="Badminton Rackets">Badminton Rackets (Pair)</option>
+                            <option value="Table Tennis">Table Tennis Rackets (Pair)</option>
+                        </select>
+                    </div>
 
-                    <button class="btn" onclick="issueEquipment()">Issue Equipment</button>
-                </div>
-            </div>
+                    <button class="btn" onclick="issueEquipment()">Issue Equipment</button>
+                </div>
+            </div>
 
-            <div class="section active-loans">
-                <h2><i class="fa-solid fa-list-check"></i> Active Equipment Loans</h2>
-                <div class="table-container">
-                    <table id="activeLoansTable">
-                        <thead>
-                            <tr>
-                                <th>Roll No</th>
-                                <th>Name</th>
-                                <th>Room</th>
-                                <th>Equipment</th>
-                                <th>Out Time</th>
-                                <th>Duration</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="activeLoansBody">
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 30px;">No active loans</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="section active-loans">
+                <h2><i class="fa-solid fa-list-check"></i> Active Equipment Loans</h2>
+                <div class="table-container">
+                    <table id="activeLoansTable">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Name</th>
+                                <th>Room</th>
+                                <th>Equipment</th>
+                                <th>Out Time</th>
+                                <th>Duration</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activeLoansBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 30px;">No active loans</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <div class="section transaction-log">
-                <h2><i class="fa-solid fa-chart-line"></i> Transaction History</h2>
-                <div class="table-container">
-                    <table id="transactionTable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Roll No</th>
-                                <th>Name</th>
-                                <th>Equipment</th>
-                                <th>Out Time</th>
-                                <th>In Time</th>
-                                <th>Duration</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionBody">
-                            <tr>
-                                <td colspan="8" style="text-align: center; padding: 30px;">No transactions yet</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+            <div class="section transaction-log">
+                <h2><i class="fa-solid fa-chart-line"></i> Transaction History</h2>
+                <div class="table-container">
+                    <table id="transactionTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Roll No</th>
+                                <th>Name</th>
+                                <th>Equipment</th>
+                                <th>Out Time</th>
+                                <th>In Time</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 30px;">No transactions yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        let studentsData = {};
-        let transactions = [];
-        let activeLoans = [];
+    <script>
+        let studentsData = {};
+        let transactions = [];
+        let activeLoans = [];
 
-        // Utility Functions
-        function showStatus(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-            setTimeout(() => {
-                element.innerHTML = '';
-            }, 5000);
-        }
+        // Utility Functions
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
 
-        function formatDateTime(date) {
-            return date.toLocaleString('en-IN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
+        function formatDateTime(date) {
+            return date.toLocaleString('en-IN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
 
-        function formatDate(date) {
-            return date.toLocaleDateString('en-IN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        }
+        function formatDate(date) {
+            return date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
 
-        function formatTime(date) {
-            return date.toLocaleTimeString('en-IN', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
 
-        function calculateDuration(startTime, endTime) {
-            const diff = endTime - startTime;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        function calculateDuration(startTime, endTime) {
+            const diff = endTime - startTime;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-            if (hours === 0) {
-                return `${minutes}m`;
-            }
-            return `${hours}h ${minutes}m`;
-        }
+            if (hours === 0) {
+                return `${minutes}m`;
+            }
+            return `${hours}h ${minutes}m`;
+        }
 
-        // Table Update Functions
-        function updateActiveLoansTable() {
-            const tbody = document.getElementById('activeLoansBody');
-            if (activeLoans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No active loans</td></tr>';
-                return;
-            }
+        // Table Update Functions
+        function updateActiveLoansTable() {
+            const tbody = document.getElementById('activeLoansBody');
+            if (activeLoans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No active loans</td></tr>';
+                return;
+            }
 
-            tbody.innerHTML = activeLoans.map(loan => {
-                const duration = calculateDuration(loan.outTime, new Date());
-                return `
-                    <tr>
-                        <td>${loan.rollNo}</td>
-                        <td>${loan.name}</td>
-                        <td>${loan.roomNo}</td>
-                        <td>${loan.equipment}</td>
-                        <td>${formatDateTime(loan.outTime)}</td>
-                        <td>${duration}</td>
-                        <td><button class="return-btn" onclick="returnEquipment(${loan.id})">Return</button></td>
-                    </tr>
-                `;
-            }).join('');
-        }
+            tbody.innerHTML = activeLoans.map(loan => {
+                const duration = calculateDuration(loan.outTime, new Date());
+                return `
+                    <tr>
+                        <td>${loan.rollNo}</td>
+                        <td>${loan.name}</td>
+                        <td>${loan.roomNo}</td>
+                        <td>${loan.equipment}</td>
+                        <td>${formatDateTime(loan.outTime)}</td>
+                        <td>${duration}</td>
+                        <td><button class="return-btn" onclick="returnEquipment(${loan.id})">Return</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
 
-        function updateTransactionTable() {
-            const tbody = document.getElementById('transactionBody');
-            if (transactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">No transactions yet</td></tr>';
-                return;
-            }
+        function updateTransactionTable() {
+            const tbody = document.getElementById('transactionBody');
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">No transactions yet</td></tr>';
+                return;
+            }
 
-            tbody.innerHTML = transactions.map(transaction => {
-                const duration = transaction.inTime ?
-                    calculateDuration(transaction.outTime, transaction.inTime) :
-                    calculateDuration(transaction.outTime, new Date());
+            tbody.innerHTML = transactions.map(transaction => {
+                const duration = transaction.inTime ?
+                    calculateDuration(transaction.outTime, transaction.inTime) :
+                    calculateDuration(transaction.outTime, new Date());
 
-                return `
-                    <tr>
-                        <td>${formatDate(transaction.outTime)}</td>
-                        <td>${transaction.rollNo}</td>
-                        <td>${transaction.name}</td>
-                        <td>${transaction.equipment}</td>
-                        <td>${formatTime(transaction.outTime)}</td>
-                        <td>${transaction.inTime ? formatTime(transaction.inTime) : '-'}</td>
-                        <td>${duration}</td>
-                        <td><span class="status-${transaction.status}">${transaction.status.toUpperCase()}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        }
+                return `
+                    <tr>
+                        <td>${formatDate(transaction.outTime)}</td>
+                        <td>${transaction.rollNo}</td>
+                        <td>${transaction.name}</td>
+                        <td>${transaction.equipment}</td>
+                        <td>${formatTime(transaction.outTime)}</td>
+                        <td>${transaction.inTime ? formatTime(transaction.inTime) : '-'}</td>
+                        <td>${duration}</td>
+                        <td><span class="status-${transaction.status}">${transaction.status.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
 
-        // Core Application Functions
-        async function loadStudentDatabase() {
-            try {
-                const response = await fetch('check.xlsx');
-                if (!response.ok) {
-                    throw new Error(`Could not find check.xlsx (Status: ${response.status})`);
-                }
+        // Core Application Functions
+        async function loadStudentDatabase() {
+            try {
+                const response = await fetch('check.xlsx');
+                if (!response.ok) {
+                    throw new Error(`Could not find check.xlsx (Status: ${response.status})`);
+                }
 
-                const arrayBuffer = await response.arrayBuffer();
-                const workbook = XLSX.read(arrayBuffer, {
-                    type: 'array'
-                });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                const arrayBuffer = await response.arrayBuffer();
+                const workbook = XLSX.read(arrayBuffer, {
+                    type: 'array'
+                });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
-                if (jsonData.length === 0) {
-                    throw new Error('The check.xlsx file appears to be empty');
-                }
+                if (jsonData.length === 0) {
+                    throw new Error('The check.xlsx file appears to be empty');
+                }
 
-                studentsData = {};
-                jsonData.forEach((row, index) => {
-                    const rollNo = String(
-                        row['Roll No'] ||
-                        row['RollNo'] ||
-                        row['roll_no'] ||
-                        row['Roll Number'] ||
-                        row['ID'] ||
-                        row['id'] ||
-                        ''
-                    ).trim();
+                studentsData = {};
+                jsonData.forEach((row, index) => {
+                    const rollNo = String(
+                        row['Roll No'] ||
+                        row['RollNo'] ||
+                        row['roll_no'] ||
+                        row['Roll Number'] ||
+                        row['ID'] ||
+                        row['id'] ||
+                        ''
+                    ).trim();
 
-                    if (rollNo) {
-                        studentsData[rollNo] = {
-                            name: row['Name'] || row['name'] || row['Student Name'] || `Student ${index + 1}`,
-                            rollNo: rollNo,
-                            roomNo: String(
-                                row['Room No'] ||
-                                row['RoomNo'] ||
-                                row['room_no'] ||
-                                row['Room Number'] ||
-                                row['Room'] ||
-                                ''
-                            ),
-                            phoneNo: String(
-                                row['Phone Number'] ||
-                                row['PhoneNo'] ||
-                                row['phone_no'] ||
-                                row['Phone'] ||
-                                row['Mobile'] ||
-                                row['Contact'] ||
-                                ''
-                            )
-                        };
-                    }
-                });
+                    if (rollNo) {
+                        studentsData[rollNo] = {
+                            name: row['Name'] || row['name'] || row['Student Name'] || `Student ${index + 1}`,
+                            rollNo: rollNo,
+                            roomNo: String(
+                                row['Room No'] ||
+                                row['RoomNo'] ||
+                                row['room_no'] ||
+                                row['Room Number'] ||
+                                row['Room'] ||
+                                ''
+                            ),
+                            phoneNo: String(
+                                row['Phone Number'] ||
+                                row['PhoneNo'] ||
+                                row['phone_no'] ||
+                                row['Phone'] ||
+                                row['Mobile'] ||
+                                row['Contact'] ||
+                                ''
+                            )
+                        };
+                    }
+                });
 
-                if (Object.keys(studentsData).length === 0) {
-                    throw new Error('No valid student records found in check.xlsx');
-                }
-                
-                showStatus('issueStatus', 'Student database loaded successfully!', 'success');
-            } catch (error) {
-                console.error('Error loading student database:', error);
-                showStatus('issueStatus', `Error loading database: ${error.message}`, 'error');
-            }
-        }
+                if (Object.keys(studentsData).length === 0) {
+                    throw new Error('No valid student records found in check.xlsx');
+                }
+                
+                showStatus('issueStatus', 'Student database loaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error loading student database:', error);
+                showStatus('issueStatus', `Error loading database: ${error.message}`, 'error');
+            }
+        }
 
-        function lookupStudent() {
-            const rollNo = document.getElementById('rollNo').value.trim();
+        function lookupStudent() {
+            const rollNo = document.getElementById('rollNo').value.trim();
 
-            if (!rollNo) {
-                showStatus('issueStatus', 'Please enter a roll number', 'error');
-                return;
-            }
+            if (!rollNo) {
+                showStatus('issueStatus', 'Please enter a roll number', 'error');
+                return;
+            }
 
-            if (Object.keys(studentsData).length === 0) {
-                showStatus('issueStatus', 'Student database not loaded. Please check if check.xlsx is available.', 'error');
-                return;
-            }
+            if (Object.keys(studentsData).length === 0) {
+                showStatus('issueStatus', 'Student database not loaded. Please check if check.xlsx is available.', 'error');
+                return;
+            }
 
-            if (!studentsData[rollNo]) {
-                showStatus('issueStatus', 'Student not found. Please check the roll number.', 'error');
-                document.getElementById('studentInfo').style.display = 'none';
-                return;
-            }
+            if (!studentsData[rollNo]) {
+                showStatus('issueStatus', 'Student not found. Please check the roll number.', 'error');
+                document.getElementById('studentInfo').style.display = 'none';
+                return;
+            }
 
-            const student = studentsData[rollNo];
-            document.getElementById('studentName').textContent = student.name;
-            document.getElementById('studentRoll').textContent = student.rollNo;
-            document.getElementById('studentRoom').textContent = student.roomNo;
-            document.getElementById('studentPhone').textContent = student.phoneNo;
+            const student = studentsData[rollNo];
+            document.getElementById('studentName').textContent = student.name;
+            document.getElementById('studentRoll').textContent = student.rollNo;
+            document.getElementById('studentRoom').textContent = student.roomNo;
+            document.getElementById('studentPhone').textContent = student.phoneNo;
 
-            document.getElementById('studentInfo').style.display = 'block';
-            showStatus('issueStatus', 'Student found! Select equipment to issue.', 'success');
-        }
+            document.getElementById('studentInfo').style.display = 'block';
+            showStatus('issueStatus', 'Student found! Select equipment to issue.', 'success');
+        }
 
-        function issueEquipment() {
-            const rollNo = document.getElementById('rollNo').value.trim();
-            const facilityType = document.getElementById('facilityType').value;
-            let equipment = facilityType;
+        function issueEquipment() {
+            const rollNo = document.getElementById('rollNo').value.trim();
+            const facilityType = document.getElementById('facilityType').value;
+            let equipment = facilityType;
 
-            if (!studentsData[rollNo]) {
-                showStatus('issueStatus', 'Please look up student first', 'error');
-                return;
-            }
+            if (!studentsData[rollNo]) {
+                showStatus('issueStatus', 'Please look up student first', 'error');
+                return;
+            }
 
-            if (!facilityType) {
-                showStatus('issueStatus', 'Please select a facility type', 'error');
-                return;
-            }
+            if (!facilityType) {
+                showStatus('issueStatus', 'Please select a facility type', 'error');
+                return;
+            }
 
-            if (facilityType === 'Sports') {
-                const sportsEquipment = document.getElementById('sportsEquipment').value;
-                if (!sportsEquipment) {
-                    showStatus('issueStatus', 'Please select a specific sports equipment', 'error');
-                    return;
-                }
-                equipment = sportsEquipment;
-            }
+            if (facilityType === 'Sports') {
+                const sportsEquipment = document.getElementById('sportsEquipment').value;
+                if (!sportsEquipment) {
+                    showStatus('issueStatus', 'Please select a specific sports equipment', 'error');
+                    return;
+                }
+                equipment = sportsEquipment;
+            }
 
-            const existingLoan = activeLoans.find(loan => loan.rollNo === rollNo);
-            if (existingLoan) {
-                showStatus('issueStatus', 'Student already has an active equipment loan. Please return it first.', 'error');
-                return;
-            }
+            const existingLoan = activeLoans.find(loan => loan.rollNo === rollNo);
+            if (existingLoan) {
+                showStatus('issueStatus', 'Student already has an active equipment loan. Please return it first.', 'error');
+                return;
+            }
 
-            const student = studentsData[rollNo];
-            const currentTime = new Date();
-            const transaction = {
-                id: Date.now(),
-                rollNo: rollNo,
-                name: student.name,
-                roomNo: student.roomNo,
-                phoneNo: student.phoneNo,
-                equipment: equipment,
-                outTime: currentTime,
-                inTime: null,
-                status: 'active'
-            };
+            const student = studentsData[rollNo];
+            const currentTime = new Date();
+            const transaction = {
+                id: Date.now(),
+                rollNo: rollNo,
+                name: student.name,
+                roomNo: student.roomNo,
+                phoneNo: student.phoneNo,
+                equipment: equipment,
+                outTime: currentTime,
+                inTime: null,
+                status: 'active'
+            };
 
-            transactions.unshift(transaction);
-            activeLoans.unshift(transaction);
+            transactions.unshift(transaction);
+            activeLoans.unshift(transaction);
 
-            updateActiveLoansTable();
-            updateTransactionTable();
+            updateActiveLoansTable();
+            updateTransactionTable();
 
-            showStatus('issueStatus', `Equipment "${equipment}" issued to ${student.name} successfully!`, 'success');
+            showStatus('issueStatus', `Equipment "${equipment}" issued to ${student.name} successfully!`, 'success');
 
-            document.getElementById('rollNo').value = '';
-            document.getElementById('facilityType').value = '';
-            document.getElementById('studentInfo').style.display = 'none';
-            document.getElementById('sportsEquipmentGroup').style.display = 'none';
-        }
+            document.getElementById('rollNo').value = '';
+            document.getElementById('facilityType').value = '';
+            document.getElementById('studentInfo').style.display = 'none';
+            document.getElementById('sportsEquipmentGroup').style.display = 'none';
+        }
 
-        function returnEquipment(transactionId) {
-            const loanIndex = activeLoans.findIndex(loan => loan.id === transactionId);
-            const transactionIndex = transactions.findIndex(t => t.id === transactionId);
+        function returnEquipment(transactionId) {
+            const loanIndex = activeLoans.findIndex(loan => loan.id === transactionId);
+            const transactionIndex = transactions.findIndex(t => t.id === transactionId);
 
-            if (loanIndex !== -1 && transactionIndex !== -1) {
-                const returnTime = new Date();
-                
-                // Update the transaction in the main history array
-                transactions[transactionIndex].inTime = returnTime;
-                transactions[transactionIndex].status = 'returned';
+            if (loanIndex !== -1 && transactionIndex !== -1) {
+                const returnTime = new Date();
+                
+                // Update the transaction in the main history array
+                transactions[transactionIndex].inTime = returnTime;
+                transactions[transactionIndex].status = 'returned';
 
-                // Remove the loan from the active loans array
-                activeLoans.splice(loanIndex, 1);
+                // Remove the loan from the active loans array
+                activeLoans.splice(loanIndex, 1);
 
-                updateActiveLoansTable();
-                updateTransactionTable();
-            }
-        }
+                updateActiveLoansTable();
+                updateTransactionTable();
+            }
+        }
 
-        window.addEventListener('load', () => {
-            loadStudentDatabase();
-            document.getElementById('facilityType').addEventListener('change', function() {
-                const sportsEquipmentGroup = document.getElementById('sportsEquipmentGroup');
-                if (this.value === 'Sports') {
-                    sportsEquipmentGroup.style.display = 'block';
-                } else {
-                    sportsEquipmentGroup.style.display = 'none';
-                }
-            });
-            // Auto-refresh active loans duration every minute
-            setInterval(() => {
-                if (activeLoans.length > 0) {
-                    updateActiveLoansTable();
-                }
-            }, 60000);
-        });
-    </script>
+        window.addEventListener('load', () => {
+            loadStudentDatabase();
+            document.getElementById('facilityType').addEventListener('change', function() {
+                const sportsEquipmentGroup = document.getElementById('sportsEquipmentGroup');
+                if (this.value === 'Sports') {
+                    sportsEquipmentGroup.style.display = 'block';
+                } else {
+                    sportsEquipmentGroup.style.display = 'none';
+                }
+            });
+            // Auto-refresh active loans duration every minute
+            setInterval(() => {
+                if (activeLoans.length > 0) {
+                    updateActiveLoansTable();
+                }
+            }, 60000);
+        });
+    </script>
 </body>
 </html>
