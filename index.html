@@ -102,27 +102,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* New CSS for the select dropdown */
-        .form-group select {
-            color: #333;
-            background: white;
-            border: 2px solid #ccc;
-            backdrop-filter: none;
-            /* Optional: To make it look more consistent with inputs */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%20114.3L154.4%20227.1c-2.3%202.3-5.3%203.4-8.5%203.4s-6.1-1.1-8.5-3.4L5.4%20114.3c-4.6-4.6-4.6-12.1%200-16.7l16.7-16.7c4.6-4.6%2012.1-4.6%2016.7%200l113.1%20113.2L253.6%2080.9c4.6-4.6%2012.1-4.6%2016.7%200l16.7%2016.7c4.7%204.6%204.7%2012.1%200%2016.7z%22%2F%3E%3C%2Fsvg%3E');
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 1em;
-        }
-
-        .form-group select option {
-            background: white;
-            color: #333;
-        }
-
         .form-group input::placeholder {
             color: rgba(255, 255, 255, 0.7);
         }
@@ -652,7 +631,7 @@
             document.getElementById('rollNo').value = '';
             document.getElementById('facilityType').value = '';
             document.getElementById('studentInfo').style.display = 'none';
-            document.getElementById('sportsEquipmentGroup').style.display = 'none';
+            document.getElementById('sportsEquipmentGroup').style.display = 'none';
         }
 
         function returnEquipment(transactionId) {
@@ -678,14 +657,14 @@
         // Initial Setup
         window.addEventListener('load', () => {
             loadStudentDatabase();
-            document.getElementById('facilityType').addEventListener('change', function() {
-                const sportsEquipmentGroup = document.getElementById('sportsEquipmentGroup');
-                if (this.value === 'Sports') {
-                    sportsEquipmentGroup.style.display = 'block';
-                } else {
-                    sportsEquipmentGroup.style.display = 'none';
-                }
-            });
+            document.getElementById('facilityType').addEventListener('change', function() {
+                const sportsEquipmentGroup = document.getElementById('sportsEquipmentGroup');
+                if (this.value === 'Sports') {
+                    sportsEquipmentGroup.style.display = 'block';
+                } else {
+                    sportsEquipmentGroup.style.display = 'none';
+                }
+            });
             // Auto-refresh active loans duration every minute
             setInterval(() => {
                 if (activeLoans.length > 0) {
