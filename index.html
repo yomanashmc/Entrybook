@@ -38,6 +38,7 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -48,6 +49,31 @@
         .header p {
             font-size: 1.1em;
             opacity: 0.9;
+        }
+
+        .protection-status {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .protection-active {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid rgba(231, 76, 60, 0.5);
+            color: #e74c3c;
+        }
+
+        .protection-inactive {
+            background: rgba(39, 174, 96, 0.2);
+            border: 2px solid rgba(39, 174, 96, 0.5);
+            color: #27ae60;
         }
 
         .main-content {
@@ -266,6 +292,72 @@
             color: #e74c3c;
         }
 
+        .alert-warning {
+            background: rgba(243, 156, 18, 0.2);
+            border: 2px solid rgba(243, 156, 18, 0.5);
+            color: #f39c12;
+        }
+
+        /* Custom modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #e74c3c;
+        }
+
+        .modal h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+
+        .modal-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 padding: 20px;
@@ -282,12 +374,24 @@
             .info-grid {
                 grid-template-columns: 1fr;
             }
+
+            .protection-status {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-top: 15px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div id="protectionStatus" class="protection-status protection-inactive">
+                <i class="fa-solid fa-shield-check"></i>
+                <span>Page Protection: Inactive</span>
+            </div>
             <h1><i class="fa-solid fa-trophy"></i> Sports Equipment Portal</h1>
             <p>Hostel Sports Equipment Management System</p>
         </div>
@@ -405,10 +509,97 @@
         </div>
     </div>
 
+    <!-- Custom Modal for Protection Warning -->
+    <div id="protectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+            </div>
+            <h3>Cannot Close/Reload Page</h3>
+            <p>You cannot close or reload this page while there are active equipment loans. Please return all equipment first.</p>
+            <div id="activeLoansCount" style="margin: 15px 0; font-size: 1.2em; font-weight: bold;"></div>
+            <button class="modal-btn" onclick="closeProtectionModal()">OK, I understand</button>
+        </div>
+    </div>
+
     <script>
         let studentsData = {};
         let transactions = [];
         let activeLoans = [];
+        let pageProtectionActive = false;
+
+        // Page Protection Functions
+        function updatePageProtection() {
+            const hasActiveLoans = activeLoans.length > 0;
+            const protectionStatus = document.getElementById('protectionStatus');
+            
+            if (hasActiveLoans !== pageProtectionActive) {
+                pageProtectionActive = hasActiveLoans;
+                
+                if (pageProtectionActive) {
+                    // Enable protection
+                    protectionStatus.className = 'protection-status protection-active';
+                    protectionStatus.innerHTML = '<i class="fa-solid fa-shield-exclamation"></i><span>Page Protection: Active</span>';
+                    
+                    // Add event listeners for page protection
+                    window.addEventListener('beforeunload', preventPageUnload);
+                    window.addEventListener('keydown', preventReloadShortcuts);
+                    
+                } else {
+                    // Disable protection
+                    protectionStatus.className = 'protection-status protection-inactive';
+                    protectionStatus.innerHTML = '<i class="fa-solid fa-shield-check"></i><span>Page Protection: Inactive</span>';
+                    
+                    // Remove event listeners
+                    window.removeEventListener('beforeunload', preventPageUnload);
+                    window.removeEventListener('keydown', preventReloadShortcuts);
+                }
+            }
+        }
+
+        function preventPageUnload(event) {
+            if (activeLoans.length > 0) {
+                const message = `You have ${activeLoans.length} active equipment loan(s). Please return all equipment before closing.`;
+                event.preventDefault();
+                event.returnValue = message;
+                return message;
+            }
+        }
+
+        function preventReloadShortcuts(event) {
+            // Prevent Ctrl+R, F5, Ctrl+F5, and other reload shortcuts
+            if (activeLoans.length > 0) {
+                if ((event.ctrlKey && event.key === 'r') || 
+                    event.key === 'F5' || 
+                    (event.ctrlKey && event.key === 'F5') ||
+                    (event.ctrlKey && event.shiftKey && event.key === 'R')) {
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    showProtectionModal();
+                    return false;
+                }
+            }
+        }
+
+        function showProtectionModal() {
+            const modal = document.getElementById('protectionModal');
+            const activeLoansCount = document.getElementById('activeLoansCount');
+            activeLoansCount.textContent = `Active Loans: ${activeLoans.length}`;
+            modal.style.display = 'block';
+        }
+
+        function closeProtectionModal() {
+            document.getElementById('protectionModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('protectionModal');
+            if (event.target === modal) {
+                closeProtectionModal();
+            }
+        });
 
         // Utility Functions
         function showStatus(elementId, message, type) {
@@ -460,23 +651,25 @@
             const tbody = document.getElementById('activeLoansBody');
             if (activeLoans.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No active loans</td></tr>';
-                return;
+            } else {
+                tbody.innerHTML = activeLoans.map(loan => {
+                    const duration = calculateDuration(loan.outTime, new Date());
+                    return `
+                        <tr>
+                            <td>${loan.rollNo}</td>
+                            <td>${loan.name}</td>
+                            <td>${loan.roomNo}</td>
+                            <td>${loan.equipment}</td>
+                            <td>${formatDateTime(loan.outTime)}</td>
+                            <td>${duration}</td>
+                            <td><button class="return-btn" onclick="returnEquipment(${loan.id})">Return</button></td>
+                        </tr>
+                    `;
+                }).join('');
             }
-
-            tbody.innerHTML = activeLoans.map(loan => {
-                const duration = calculateDuration(loan.outTime, new Date());
-                return `
-                    <tr>
-                        <td>${loan.rollNo}</td>
-                        <td>${loan.name}</td>
-                        <td>${loan.roomNo}</td>
-                        <td>${loan.equipment}</td>
-                        <td>${formatDateTime(loan.outTime)}</td>
-                        <td>${duration}</td>
-                        <td><button class="return-btn" onclick="returnEquipment(${loan.id})">Return</button></td>
-                    </tr>
-                `;
-            }).join('');
+            
+            // Update page protection status
+            updatePageProtection();
         }
 
         function updateTransactionTable() {
@@ -652,7 +845,7 @@
             updateActiveLoansTable();
             updateTransactionTable();
 
-            showStatus('issueStatus', `Equipment "${equipment}" issued to ${student.name} successfully!`, 'success');
+            showStatus('issueStatus', `Equipment "${equipment}" issued to ${student.name} successfully! Page protection is now active.`, 'warning');
 
             document.getElementById('rollNo').value = '';
             document.getElementById('facilityType').value = '';
@@ -676,26 +869,7 @@
 
                 updateActiveLoansTable();
                 updateTransactionTable();
-            }
-        }
 
-        window.addEventListener('load', () => {
-            loadStudentDatabase();
-            document.getElementById('facilityType').addEventListener('change', function() {
-                const sportsEquipmentGroup = document.getElementById('sportsEquipmentGroup');
-                if (this.value === 'Sports') {
-                    sportsEquipmentGroup.style.display = 'block';
-                } else {
-                    sportsEquipmentGroup.style.display = 'none';
-                }
-            });
-            // Auto-refresh active loans duration every minute
-            setInterval(() => {
-                if (activeLoans.length > 0) {
-                    updateActiveLoansTable();
-                }
-            }, 60000);
-        });
-    </script>
-</body>
-</html>
+                // Show success message with protection status
+                if (activeLoans.length === 0) {
+                    showStatus('issueStatus', 'Equipment returned successfully! Page protection is now inactive.', 'success');
