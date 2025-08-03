@@ -509,8 +509,15 @@
                     throw new Error('The check.xlsx file appears to be empty');
                 }
 
+                // Debug: Log the first row to see the actual column names
+                console.log('First row of Excel data:', jsonData[0]);
+                console.log('All column names found:', Object.keys(jsonData[0] || {}));
+
                 studentsData = {};
                 jsonData.forEach((row, index) => {
+                    // Debug: Log each row being processed
+                    console.log(`Processing row ${index + 1}:`, row);
+
                     const rollNo = String(
                         row['Roll No'] ||
                         row['RollNo'] ||
@@ -521,8 +528,10 @@
                         ''
                     ).trim();
 
+                    console.log(`Extracted Roll No: "${rollNo}"`);
+
                     if (rollNo) {
-                        studentsData[rollNo] = {
+                        const studentData = {
                             name: row['Name'] || row['name'] || row['Student Name'] || `Student ${index + 1}`,
                             rollNo: rollNo,
                             roomNo: String(
@@ -532,7 +541,7 @@
                                 row['Room Number'] ||
                                 row['Room'] ||
                                 ''
-                            ),
+                            ).trim(),
                             phoneNo: String(
                                 row['Phone Number'] ||
                                 row['PhoneNo'] ||
@@ -541,16 +550,22 @@
                                 row['Mobile'] ||
                                 row['Contact'] ||
                                 ''
-                            )
+                            ).trim()
                         };
+                        
+                        console.log(`Student data created:`, studentData);
+                        studentsData[rollNo] = studentData;
                     }
                 });
+
+                console.log('Final studentsData object:', studentsData);
+                console.log('Total students loaded:', Object.keys(studentsData).length);
 
                 if (Object.keys(studentsData).length === 0) {
                     throw new Error('No valid student records found in check.xlsx');
                 }
                 
-                showStatus('issueStatus', 'Student database loaded successfully!', 'success');
+                showStatus('issueStatus', `Student database loaded successfully! ${Object.keys(studentsData).length} students found.`, 'success');
             } catch (error) {
                 console.error('Error loading student database:', error);
                 showStatus('issueStatus', `Error loading database: ${error.message}`, 'error');
