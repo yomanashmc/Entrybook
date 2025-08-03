@@ -363,9 +363,9 @@
                                 <th>Roll No</th>
                                 <th>Name</th>
                                 <th>Room</th>
+                                <th>Phone</th>
                                 <th>Equipment</th>
                                 <th>Out Time</th>
-                                <th>Duration</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -387,10 +387,10 @@
                                 <th>Date</th>
                                 <th>Roll No</th>
                                 <th>Name</th>
+                                <th>Phone</th>
                                 <th>Equipment</th>
                                 <th>Out Time</th>
                                 <th>In Time</th>
-                                <th>Duration</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -444,17 +444,6 @@
             });
         }
 
-        function calculateDuration(startTime, endTime) {
-            const diff = endTime - startTime;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-            if (hours === 0) {
-                return `${minutes}m`;
-            }
-            return `${hours}h ${minutes}m`;
-        }
-
         // Table Update Functions
         function updateActiveLoansTable() {
             const tbody = document.getElementById('activeLoansBody');
@@ -464,15 +453,14 @@
             }
 
             tbody.innerHTML = activeLoans.map(loan => {
-                const duration = calculateDuration(loan.outTime, new Date());
                 return `
                     <tr>
                         <td>${loan.rollNo}</td>
                         <td>${loan.name}</td>
                         <td>${loan.roomNo}</td>
+                        <td>${loan.phoneNo}</td>
                         <td>${loan.equipment}</td>
                         <td>${formatDateTime(loan.outTime)}</td>
-                        <td>${duration}</td>
                         <td><button class="return-btn" onclick="returnEquipment(${loan.id})">Return</button></td>
                     </tr>
                 `;
@@ -487,19 +475,15 @@
             }
 
             tbody.innerHTML = transactions.map(transaction => {
-                const duration = transaction.inTime ?
-                    calculateDuration(transaction.outTime, transaction.inTime) :
-                    calculateDuration(transaction.outTime, new Date());
-
                 return `
                     <tr>
                         <td>${formatDate(transaction.outTime)}</td>
                         <td>${transaction.rollNo}</td>
                         <td>${transaction.name}</td>
+                        <td>${transaction.phoneNo}</td>
                         <td>${transaction.equipment}</td>
                         <td>${formatTime(transaction.outTime)}</td>
                         <td>${transaction.inTime ? formatTime(transaction.inTime) : '-'}</td>
-                        <td>${duration}</td>
                         <td><span class="status-${transaction.status}">${transaction.status.toUpperCase()}</span></td>
                     </tr>
                 `;
@@ -701,15 +685,7 @@
                     return 'You have active equipment loans. Please return all equipment before leaving.';
                 }
             });
-
-            // Auto-refresh active loans duration every minute
-            setInterval(() => {
-                if (activeLoans.length > 0) {
-                    updateActiveLoansTable();
-                }
-            }, 60000);
         });
     </script>
 </body>
 </html>
-
