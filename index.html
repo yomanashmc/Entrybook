@@ -509,66 +509,112 @@
                     throw new Error('The check.xlsx file appears to be empty');
                 }
 
-                // Debug: Log the first row to see the actual column names
-                console.log('First row of Excel data:', jsonData[0]);
-                console.log('All column names found:', Object.keys(jsonData[0] || {}));
+                // Debug: Show what columns we found
+                const firstRow = jsonData[0] || {};
+                const columnNames = Object.keys(firstRow);
+                console.log('🔍 DEBUGGING EXCEL FILE:');
+                console.log('📋 Available columns:', columnNames);
+                console.log('📄 First row data:', firstRow);
+
+                // Create a debug display on the page
+                let debugInfo = '<div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;"><h4>🔍 Excel File Debug Info:</h4>';
+                debugInfo += `<p><strong>Columns found:</strong> ${columnNames.join(', ')}</p>`;
+                debugInfo += '<p><strong>First row values:</strong></p><ul>';
+                
+                for (let [key, value] of Object.entries(firstRow)) {
+                    debugInfo += `<li><strong>${key}:</strong> "${value}"</li>`;
+                }
+                debugInfo += '</ul></div>';
+                
+                // Show debug info on page
+                const statusDiv = document.getElementById('issueStatus');
+                statusDiv.innerHTML = debugInfo;
 
                 studentsData = {};
                 jsonData.forEach((row, index) => {
-                    // Debug: Log each row being processed
-                    console.log(`Processing row ${index + 1}:`, row);
+                    console.log(`\n📝 Processing row ${index + 1}:`, row);
 
-                    const rollNo = String(
-                        row['Roll No'] ||
-                        row['RollNo'] ||
-                        row['roll_no'] ||
-                        row['Roll Number'] ||
-                        row['ID'] ||
-                        row['id'] ||
-                        ''
-                    ).trim();
+                    // More flexible column matching
+                    let rollNo = '';
+                    let name = '';
+                    let roomNo = '';
+                    let phoneNo = '';
 
-                    console.log(`Extracted Roll No: "${rollNo}"`);
+                    // Find Roll No - try different possible column names
+                    for (let key of Object.keys(row)) {
+                        if (key.toLowerCase().includes('roll')) {
+                            rollNo = String(row[key] || '').trim();
+                            console.log(`✅ Found Roll No in column "${key}": "${rollNo}"`);
+                            break;
+                        }
+                    }
 
-                    if (rollNo) {
+                    // Find Name
+                    for (let key of Object.keys(row)) {
+                        if (key.toLowerCase().includes('name')) {
+                            name = String(row[key] || '').trim();
+                            console.log(`✅ Found Name in column "${key}": "${name}"`);
+                            break;
+                        }
+                    }
+
+                    // Find Room No
+                    for (let key of Object.keys(row)) {
+                        if (key.toLowerCase().includes('room')) {
+                            roomNo = String(row[key] || '').trim();
+                            console.log(`✅ Found Room in column "${key}": "${roomNo}"`);
+                            break;
+                        }
+                    }
+
+                    // Find Phone Number
+                    for (let key of Object.keys(row)) {
+                        if (key.toLowerCase().includes('phone') || key.toLowerCase().includes('mobile') || key.toLowerCase().includes('contact')) {
+                            phoneNo = String(row[key] || '').trim();
+                            console.log(`✅ Found Phone in column "${key}": "${phoneNo}"`);
+                            break;
+                        }
+                    }
+
+                    // Fallback: use exact column names from your screenshot
+                    if (!rollNo) rollNo = String(row['Roll No'] || '').trim();
+                    if (!name) name = String(row['Name'] || '').trim();
+                    if (!roomNo) roomNo = String(row['Room No'] || '').trim();
+                    if (!phoneNo) phoneNo = String(row['Phone Number'] || '').trim();
+
+                    console.log(`📊 Final extracted data - Roll: "${rollNo}", Name: "${name}", Room: "${roomNo}", Phone: "${phoneNo}"`);
+
+                    if (rollNo && rollNo !== 'undefined' && rollNo !== '') {
                         const studentData = {
-                            name: row['Name'] || row['name'] || row['Student Name'] || `Student ${index + 1}`,
+                            name: name || `Student ${index + 1}`,
                             rollNo: rollNo,
-                            roomNo: String(
-                                row['Room No'] ||
-                                row['RoomNo'] ||
-                                row['room_no'] ||
-                                row['Room Number'] ||
-                                row['Room'] ||
-                                ''
-                            ).trim(),
-                            phoneNo: String(
-                                row['Phone Number'] ||
-                                row['PhoneNo'] ||
-                                row['phone_no'] ||
-                                row['Phone'] ||
-                                row['Mobile'] ||
-                                row['Contact'] ||
-                                ''
-                            ).trim()
+                            roomNo: roomNo || 'N/A',
+                            phoneNo: phoneNo || 'N/A'
                         };
                         
-                        console.log(`Student data created:`, studentData);
+                        console.log(`✅ Adding student:`, studentData);
                         studentsData[rollNo] = studentData;
+                    } else {
+                        console.log(`❌ Skipping row ${index + 1} - no valid roll number found`);
                     }
                 });
 
-                console.log('Final studentsData object:', studentsData);
+                console.log('\n📊 FINAL RESULTS:');
                 console.log('Total students loaded:', Object.keys(studentsData).length);
+                console.log('Students data:', studentsData);
 
                 if (Object.keys(studentsData).length === 0) {
-                    throw new Error('No valid student records found in check.xlsx');
+                    throw new Error('No valid student records found in check.xlsx. Check the debug info above.');
                 }
                 
-                showStatus('issueStatus', `Student database loaded successfully! ${Object.keys(studentsData).length} students found.`, 'success');
+                // Update the debug info to show success
+                setTimeout(() => {
+                    showStatus('issueStatus', `✅ Student database loaded successfully! ${Object.keys(studentsData).length} students found.`, 'success');
+                }, 3000);
+
             } catch (error) {
-                console.error('Error loading student database:', error);
-                showStatus('issueStatus', `Error loading database: ${error.message}`, 'error');
+                console.error('❌ Error loading student database:', error);
+                showStatus('issueStatus', `❌ Error loading database: ${error.message}`, 'error');
             }
         }
 
