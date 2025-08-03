@@ -734,6 +734,23 @@
                 }
             });
         });
+
+        document.addEventListener('keydown', function(e) {
+            // Disable F5
+            if (e.key === 'F5') {
+                e.preventDefault();
+            }
+            
+            // Disable Ctrl+R
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+            }
+            
+            // Disable Ctrl+Shift+R (hard refresh)
+            if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>
