@@ -357,7 +357,7 @@
             </div>
 
             <div class="section active-loans">
-                <h2><i class="fa-solid fa-list-check"></i> Active Equipment Loans</h2>
+                <h2><i class="fa-solid fa-list-boarders"></i> Active Equipment Loans</h2>
                 <div class="table-container">
                     <table id="activeLoansTable">
                         <thead>
@@ -495,9 +495,9 @@
         // Core Application Functions
         async function loadStudentDatabase() {
             try {
-                const response = await fetch('check.xlsx');
+                const response = await fetch('boarders.xlsx');
                 if (!response.ok) {
-                    throw new Error(`Could not find check.xlsx (Status: ${response.status})`);
+                    throw new Error(`Could not find boarders.xlsx (Status: ${response.status})`);
                 }
 
                 const arrayBuffer = await response.arrayBuffer();
@@ -508,7 +508,7 @@
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
                 if (jsonData.length === 0) {
-                    throw new Error('The check.xlsx file appears to be empty');
+                    throw new Error('The boarders.xlsx file appears to be empty');
                 }
 
                 // Debug: Show what columns we found
@@ -606,7 +606,7 @@
                 console.log('Students data:', studentsData);
 
                 if (Object.keys(studentsData).length === 0) {
-                    throw new Error('No valid student records found in check.xlsx. Check the debug info above.');
+                    throw new Error('No valid student records found in boarders.xlsx. boarders the debug info above.');
                 }
                 
                 // Update the debug info to show success
@@ -629,12 +629,12 @@
             }
 
             if (Object.keys(studentsData).length === 0) {
-                showStatus('issueStatus', 'Student database not loaded. Please check if check.xlsx is available.', 'error');
+                showStatus('issueStatus', 'Student database not loaded. Please boarders if boarders.xlsx is available.', 'error');
                 return;
             }
 
             if (!studentsData[rollNo]) {
-                showStatus('issueStatus', 'Student not found. Please check the roll number.', 'error');
+                showStatus('issueStatus', 'Student not found. Please boarders the roll number.', 'error');
                 document.getElementById('studentInfo').style.display = 'none';
                 return;
             }
@@ -757,3 +757,4 @@
     </script>
 </body>
 </html>
+
