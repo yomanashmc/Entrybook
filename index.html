@@ -117,7 +117,6 @@
             color: rgba(51, 51, 51, 0.7);
         }
 
-        /* Fix dropdown option visibility */
         .form-group select option {
             background: white;
             color: #333;
@@ -732,18 +731,6 @@
                     sportsEquipmentGroup.style.display = 'block';
                 } else {
                     sportsEquipmentGroup.style.display = 'none';
-                }
-            });
-
-            // New event listener for the beforeunload event
-            window.addEventListener('beforeunload', (event) => {
-                if (activeLoans.length > 0) {
-                    // Cancel the event and show a custom message
-                    event.preventDefault();
-                    // This message is often ignored by modern browsers for security reasons,
-                    // but the browser will still show a generic confirmation popup.
-                    event.returnValue = 'You have active equipment loans. Please return all equipment before leaving.';
-                    return 'You have active equipment loans. Please return all equipment before leaving.';
                 }
             });
         });
